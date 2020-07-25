@@ -8,7 +8,7 @@ class MuWeatherApplication :Application(){
 
     companion object{
 
-        const val TOKEN = "填入申请到的令牌值"
+        const val TOKEN = "XlWBS6pbGfBtVPg9"
 
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
