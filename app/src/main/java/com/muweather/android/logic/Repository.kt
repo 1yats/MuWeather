@@ -2,6 +2,7 @@ package com.muweather.android.logic
 
 import android.content.Context
 import androidx.lifecycle.liveData
+import com.muweather.android.logic.dao.PlaceDao
 import com.muweather.android.logic.model.Place
 import com.muweather.android.logic.model.Weather
 import com.muweather.android.logic.network.MuWeatherNetwork
@@ -28,28 +29,28 @@ object Repository {
     }
 
     fun refreshWeather(lng: String, lat: String) = fire(Dispatchers.IO) {
-            coroutineScope {
-                val deferredRealtime = async {
-                    MuWeatherNetwork.getRealtimeWeather(lng, lat)
-                }
-                val deferredDaily = async {
-                    MuWeatherNetwork.getDailyWeather(lng, lat)
-                }
-                val realtimeResponse = deferredRealtime.await()
-                val dailyResponse = deferredDaily.await()
-                if (realtimeResponse.status == "ok" && dailyResponse.status == "ok") {
-                    val weather =
-                        Weather(realtimeResponse.result.realtime, dailyResponse.result.daily)
-                    Result.success(weather)
-                } else {
-                    Result.failure(
-                        RuntimeException(
-                            "realtime response status is ${realtimeResponse.status}" +
-                                    "daily response status is ${dailyResponse.status}"
-                        )
-                    )
-                }
+        coroutineScope {
+            val deferredRealtime = async {
+                MuWeatherNetwork.getRealtimeWeather(lng, lat)
             }
+            val deferredDaily = async {
+                MuWeatherNetwork.getDailyWeather(lng, lat)
+            }
+            val realtimeResponse = deferredRealtime.await()
+            val dailyResponse = deferredDaily.await()
+            if (realtimeResponse.status == "ok" && dailyResponse.status == "ok") {
+                val weather =
+                    Weather(realtimeResponse.result.realtime, dailyResponse.result.daily)
+                Result.success(weather)
+            } else {
+                Result.failure(
+                    RuntimeException(
+                        "realtime response status is ${realtimeResponse.status}" +
+                                "daily response status is ${dailyResponse.status}"
+                    )
+                )
+            }
+        }
     }
 
     private fun <T> fire(context: CoroutineContext, block: suspend () -> Result<T>) =
@@ -61,4 +62,8 @@ object Repository {
             }
             emit(result)
         }
+
+    fun savePlace(place: Place) = PlaceDao.savePlace(place)
+    fun getSavedPlace() = PlaceDao.getSacedPlace()
+    fun isPlaceSaved() = PlaceDao.isPlaceSaced()
 }

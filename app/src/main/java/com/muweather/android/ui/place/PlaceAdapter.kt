@@ -12,7 +12,7 @@ import com.muweather.android.logic.model.Place
 import com.muweather.android.ui.weather.WeatherActivity
 import kotlinx.android.synthetic.main.place_item.view.*
 
-class PlaceAdapter(private val fragment: Fragment,private val placeList: List<Place>): RecyclerView.Adapter<PlaceAdapter.ViewHolder>(){
+class PlaceAdapter(private val fragment: PlaceFragment,private val placeList: List<Place>): RecyclerView.Adapter<PlaceAdapter.ViewHolder>(){
 
     inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
         val placeName :TextView = view.findViewById(R.id.placeName)
@@ -30,7 +30,9 @@ class PlaceAdapter(private val fragment: Fragment,private val placeList: List<Pl
                 putExtra("location_lat",place.location.lat)
                 putExtra("place_name",place.name)
             }
+            fragment.viewModel.savePlace(place)
             fragment.startActivity(intent)
+            fragment.activity?.finish()
         }
         return holder
     }
