@@ -38,19 +38,31 @@ class WeatherActivity : AppCompatActivity() {
         if (viewModel.locationLat.isEmpty()) {
             viewModel.locationLat = intent.getStringExtra("location_lat") ?: ""
         }
-        if (viewModel.placeName.isEmpty()){
-            viewModel.placeName = intent.getStringExtra("place_name")?:""
+        if (viewModel.placeName.isEmpty()) {
+            viewModel.placeName = intent.getStringExtra("place_name") ?: ""
         }
         viewModel.weatherLiveData.observe(this, Observer { result ->
             val weather = result.getOrNull()
-            if (weather!=null){
+            if (weather != null) {
                 showWeatherInfo(weather)
-            }else{
-                Toast.makeText(this,"无法成功获取天气信息",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()
             }
+            swipeRefresh.isRefreshing = false
         })
-        viewModel.refreshWeather(viewModel.locationLng,viewModel.locationLat)
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
+        refreshWeather()
+        swipeRefresh.setOnRefreshListener {
+            refreshWeather()
+        }
+
+    }
+
+    fun refreshWeather() {
+        viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
+        swipeRefresh.isRefreshing = true
+
     }
 
     private fun showWeatherInfo(weather: Weather) {
@@ -67,10 +79,11 @@ class WeatherActivity : AppCompatActivity() {
         //填充forecast.xml布局中的数据
         forecastLayout.removeAllViews()
         val days = daily.skycon.size
-        for (i in 0 until days){
+        for (i in 0 until days) {
             val skycon = daily.skycon[i]
             val temperature = daily.temperature[i]
-            val view = LayoutInflater.from(this).inflate(R.layout.forecast_item,forecastLayout,false)
+            val view =
+                LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false)
             val dateInfo = view.findViewById(R.id.dateInfo) as TextView
             val skyIcon = view.findViewById(R.id.skyIcon) as ImageView
             val skyInfo = view.findViewById(R.id.skyInfo) as TextView
