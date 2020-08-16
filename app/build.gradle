@@ -25,10 +25,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs{
+        config{
+            storeFile file('C:\\Users\\leemuzi\\leemuzi\\muweather.jks')
+            storePassword '191212'
+            keyAlias = 'monke2dev'
+            keyPassword '191212'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 
